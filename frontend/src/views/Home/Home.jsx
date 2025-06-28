@@ -8,15 +8,20 @@ const apiUrl = import.meta.env.VITE_API_URL;    //se agrega variable ambiente ap
 
 const Home = () => {
   const [products, setProducts] = useState([])
+  const [search, setSearch] = useState("")   //se crea estado para busqueda parcial
   const [error, setError] = useState(null)
   const [isEditing, setIsEditing] = useState(null)
   const [productEditing, setProductEditing] = useState(null)
 
   const { user, logout, token } = useAuth()
 
-  const fetchingProducts = async () => {
+  const fetchingProducts = async (value) => {    //se modifica fetchingProducts para reutilizar la ruta de busqueda y filtrar segun la consigna
     try {
-      const response = await fetch(`${apiUrl}/api/products`)
+      const searchValue = { searchText: value }
+      const params = new URLSearchParams(searchValue).toString();
+      const response = await fetch(`${apiUrl}/api/products?${params}`, {
+        method: "GET",
+      })
 
       if (!response.ok) {
         setError("Sesión terminada, vuelve a loguearte.")
@@ -33,7 +38,7 @@ const Home = () => {
   }
 
   useEffect(() => {
-    fetchingProducts()
+    fetchingProducts("")
   }, [])
 
   const handleDelete = async (product) => {
@@ -63,10 +68,23 @@ const Home = () => {
     setProductEditing(null)
   }
 
+  const handleSearch = async (e) => {
+    setSearch(e.target.value);
+    fetchingProducts(e.target.value)
+  }
+
   return (
     <Layout>
       <h1>Lista de productos</h1>
       {user && <p>Bienvenido, {user.email}</p>}
+      <div>
+        <input
+      type="text"
+      placeholder="Buscar producto..."
+      value={search}
+      onChange={handleSearch}
+    />
+      </div>
       {error && <>
         <div className="error-home">
           <h2>{error}</h2>
