@@ -2,19 +2,31 @@ import { Request, Response } from "express"
 import { Product } from "../models/productModel"
 import { email, success } from "zod/v4"
 
-const getAllProducts = async (req: Request, res: Response): Promise<any> => {
+const getAllProducts = async (req: Request, res: Response): Promise<any> => {     //se modifica función para busqueda de productos
   try {
-    const products = await Product.find()
+    const { name } = req.query;
+
+    let products;
+
+    if (name && typeof name === "string" && name.trim() !== "") {
+      // Búsqueda parcial por nombre (insensible a mayúsculas/minúsculas)
+      products = await Product.find({
+        name: { $regex: name, $options: "i" },
+      });
+    } else {
+      products = await Product.find();
+    }
     res.json({
       success: true,
       message: "recuperar todos los productos",
       data: products
     })
   } catch (error) {
-    const err = error as Error
-    res.status(500).json({ success: false, message: err.message })
+    const err = error as Error;
+    res.status(500).json({ success: false, message: err.message });
   }
-}
+};
+
 
 const createProduct = async (req: Request, res: Response): Promise<any> => {
   try {
