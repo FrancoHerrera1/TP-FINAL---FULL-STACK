@@ -3,6 +3,8 @@ import { Layout } from "../../components/Layout"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 
+const apiUrl = import.meta.env.VITE_API_URL;    //se agrega variable ambiente api vite + react
+
 const Dashboard = () => {
   const [name, setName] = useState("")
   const [price, setPrice] = useState(0)
@@ -46,7 +48,7 @@ const Dashboard = () => {
     const newDataProduct = { name, price, category }
 
     try {
-      const response = await fetch("http://localhost:1234/api/products", {
+      const response = await fetch(`${apiUrl}/api/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
