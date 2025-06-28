@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
         {children}
       </main>
       <footer>
-        <p>Sitio creado por Gabriel Alberini</p>
+        <p>Sitio creado por Franco Herrera</p>
       </footer>
     </>
   )

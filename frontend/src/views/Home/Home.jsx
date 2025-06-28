@@ -17,7 +17,7 @@ const Home = () => {
 
   const fetchingProducts = async (value) => {    //se modifica fetchingProducts para reutilizar la ruta de busqueda y filtrar segun la consigna
     try {
-      const searchValue = { searchText: value }
+      const searchValue = { name: value }
       const params = new URLSearchParams(searchValue).toString();
       const response = await fetch(`${apiUrl}/api/products?${params}`, {
         method: "GET",
@@ -75,11 +75,11 @@ const Home = () => {
 
   return (
     <Layout>
-      <h1>Lista de productos</h1>
+      <h1>Lista de Productos</h1>
       {user && <p>Bienvenido, {user.email}</p>}
-      <div>
+      <div className="searchBar">
         <input
-      type="text"
+      type="search"
       placeholder="Buscar producto..."
       value={search}
       onChange={handleSearch}
@@ -96,7 +96,11 @@ const Home = () => {
       }
       <section className="grid-products">
         {
-          products.map((product) => {
+          products.length == 0 ? (
+            <div>
+              <h2>¡No se encuentran productos cargados!</h2>
+            </div>
+          ) : (products.map((product) => {
             return (
               <div key={product._id}>
                 <h2>{product.name}</h2>
@@ -110,7 +114,7 @@ const Home = () => {
                 }
               </div>
             )
-          })
+          }))
         }
       </section>
     </Layout>
