@@ -1,46 +1,176 @@
 # 🧪 Trabajo Práctico Complementario: Implementación de Búsqueda por Nombre
 
-## 🎯 Objetivo
+## 📚 Descripción del Proyecto
 
-Simular una tarea cotidiana dentro de un entorno de trabajo corporativo, aplicando una mejora sobre una aplicación previamente entregada. Esta mejora consiste en agregar una funcionalidad de búsqueda por nombre en la base de datos de productos, accesible desde el frontend y resuelta en el backend.
+Este proyecto es una aplicación **CRUD de productos con MongoDB, Express, React y Node.js (MERN stack)**. Inicialmente permitía crear, leer, actualizar y eliminar productos desde una base de datos.
 
-## 📌 Alcance de la mejora
+En esta entrega se agregó una **nueva funcionalidad de búsqueda de productos por nombre**, integrando el frontend y backend mediante una consulta dinámica y parcial.
 
-Se parte de una app CRUD funcional con MongoDB, organizada por modelos, rutas y controladores, que ya permite gestionar productos, usuarios (opcional) y categorías. Esta consigna requiere:
+---
 
-- Agregar un campo de búsqueda en el frontend, que permita buscar productos por nombre.
-- Incorporar en el backend una ruta que reciba el valor buscado y devuelva los productos que coincidan parcial o completamente.
-- Asegurar la correcta visualización dinámica de los resultados en el frontend.
-- Mantener y aplicar buenas prácticas como el uso de controladores, rutas limpias, manejo de errores y status de respuesta.
-- Usar variables de entorno en ambos entornos para separar datos sensibles y facilitar la configuración.
+## 🛠️ Tecnologías utilizadas
 
-## ✅ Requisitos
+- **Backend:**
 
-- Utilizar la app CRUD ya desarrollada como base de trabajo.
-- Implementar un input de búsqueda de productos por nombre en el frontend.
-- Configurar una nueva ruta en el backend que reciba el término de búsqueda y realice una consulta en la base de datos.
-- La búsqueda debe ser parcial e insensible a mayúsculas/minúsculas.
-- Mostrar los resultados en pantalla en función del valor buscado.
-- Usar variables de entorno (`.env`) para definir la URL del backend en el frontend.
-- Mantener separadas las capas de modelo, controlador y rutas en el backend.
-- El backend debe estar conectado a una base de datos MongoDB usando Mongoose.
-- Conservar todo lo que ya funciona en la app sin modificar otras funcionalidades.
+  - Node.js
+  - Express.js
+  - MongoDB + Mongoose
+  - dotenv
 
-## 📄 Entrega
+- **Frontend:**
 
-Subir el proyecto actualizado a un repositorio en GitHub.
+  - React.js
+  - Vite
+  - JavaScript
+  - Fetch API
+  - Context API (para manejo de sesión de usuario)
 
-Incluir un archivo `README.md` que contenga:
+---
 
-- Título del proyecto y breve descripción de la nueva funcionalidad agregada.
-- Tecnologías utilizadas.
-- Instrucciones para ejecutar backend y frontend.
-- Ejemplos de uso de la nueva funcionalidad.
-- Variables de entorno necesarias (`.env.example`).
+## 🚀 ¿Cómo ejecutar el proyecto?
 
-Asegurarse de que tanto el backend como el frontend funcionen correctamente de forma conjunta.
+### Backend (API)
 
-## ⏰ Fechas
+1. Clonar el repositorio.
 
-- **Apertura:** Tuesday, 17 de June de 2025, 00:00  
-- **Cierre:** Tuesday, 1 de July de 2025, 23:59
+2. Ir a la carpeta del backend:
+
+```bash
+cd backend
+```
+
+3. Instalar dependencias:
+
+```bash
+npm install
+```
+
+4. Crear un archivo `.env` siguiendo el ejemplo de `.env.example`. Variables necesarias:
+
+```
+MONGODB_URI=mongodb://localhost:27017/tu_basededatos
+PORT=3000
+```
+
+5. Iniciar el servidor:
+
+```bash
+npm run dev
+```
+
+---
+
+### Frontend (React + Vite)
+
+1. Ir a la carpeta del frontend:
+
+```bash
+cd frontend
+```
+
+2. Instalar dependencias:
+
+```bash
+npm install
+```
+
+3. Crear un archivo `.env` siguiendo el ejemplo de `.env.example`. Variables necesarias:
+
+```
+VITE_API_URL=http://localhost:3000
+```
+
+4. Iniciar el servidor de desarrollo:
+
+```bash
+npm run dev
+```
+
+---
+
+## 🌟 Nueva funcionalidad agregada: Búsqueda por Nombre
+
+### ✅ ¿En qué consiste la mejora?
+
+Ahora, desde el **frontend**, el usuario puede ingresar un texto de búsqueda y la aplicación devuelve **todos los productos cuyo nombre contenga ese texto**, sin importar mayúsculas o minúsculas.
+
+---
+
+### 💻 ¿Cómo funciona internamente?
+
+#### Backend (API):
+
+Se modificó el controlador `getAllProducts` para permitir buscar por nombre de manera parcial:
+
+```typescript
+const { name } = req.query;
+
+let products;
+
+if (name && typeof name === "string" && name.trim() !== "") {
+  products = await Product.find({
+    name: { $regex: name, $options: "i" },
+  });
+} else {
+  products = await Product.find();
+}
+```
+
+Esto permite buscar productos que contengan el texto ingresado en cualquier parte del nombre (búsqueda parcial, insensible a mayúsculas/minúsculas).
+
+---
+
+#### Frontend (React):
+
+Se agregó un **input de búsqueda** y se actualizó la función `fetchingProducts` para enviar el parámetro `name` al backend mediante **query params**:
+
+```javascript
+const searchValue = { name: value }
+const params = new URLSearchParams(searchValue).toString();
+const response = await fetch(`${apiUrl}/api/products?${params}`, {
+  method: "GET",
+});
+```
+
+Cada vez que el usuario escribe, se hace una petición GET con el término buscado.
+
+---
+
+## 💻 Ejemplo de uso
+
+1. El usuario abre la app y ve el listado completo de productos.
+
+2. En el campo de búsqueda escribe:
+
+```
+"camisa"
+```
+
+3. La aplicación muestra solo los productos cuyos nombres incluyan la palabra "camisa", como:
+
+- Camisa Blanca
+- Camisa de Jean
+- Camisa Roja
+
+4. La búsqueda ignora diferencias entre mayúsculas y minúsculas.
+
+---
+
+## 🔐 Variables de entorno necesarias
+
+### Backend: `.env.example`
+
+```
+MONGODB_URI=mongodb://localhost:27017/tu_basededatos
+PORT=3000
+```
+
+### Frontend: `.env.example`
+
+```
+VITE_API_URL=http://localhost:3000
+```
+
+---
+
+## Creado por Herrera Franco
